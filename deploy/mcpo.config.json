@@ -1,0 +1,15 @@
+{
+  "//": "mcpo-Konfiguration: exponiert den stdio-MCP-Server als OpenAPI/HTTP für OpenWebUI.",
+  "//run": "mcpo --config deploy/mcpo.config.json --port 8000  (dann OpenWebUI-Tool-Server auf http://<vm>:8000/erpnext zeigen)",
+  "mcpServers": {
+    "erpnext": {
+      "command": "python",
+      "args": ["-m", "erpnext_connector"],
+      "env": {
+        "ERPNEXT_URL": "https://deine-instanz.frappe.cloud",
+        "ERPNEXT_API_KEY": "${ERPNEXT_API_KEY}",
+        "ERPNEXT_API_SECRET": "${ERPNEXT_API_SECRET}"
+      }
+    }
+  }
+}
