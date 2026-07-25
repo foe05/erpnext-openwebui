@@ -253,7 +253,7 @@ class SalesCycle:
         if emp:
             filters.append(["employee", "=", emp])
         offene = await self._client.get_list(
-            "Timesheet", filters=filters, fields=["name"], limit=1, order_by="modified desc"
+            "Timesheet", filters=filters, fields=["name"], limit=1
         )
         if offene:
             ts_name = offene[0]["name"]
@@ -304,7 +304,6 @@ class SalesCycle:
             filters=[["parent_project", "=", projekt_id], ["total_billable_amount", ">", 0]],
             fields=["name", "docstatus"],
             limit=100,
-            order_by="creation asc",
         )
         if not ts_liste:
             return {

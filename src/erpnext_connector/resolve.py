@@ -61,9 +61,7 @@ class Resolver:
             "Customer",
             filters=[["customer_name", "like", f"%{text}%"]],
             fields=["name", "customer_name", "customer_group", "territory"],
-            limit=self._limit,
-            order_by="modified desc",
-        )
+            limit=self._limit,        )
         return _classify(rows, was="Kunde", suchtext=text)
 
     async def finde_party(self, text: str) -> Resolution:
@@ -72,16 +70,12 @@ class Resolver:
             "Customer",
             filters=[["customer_name", "like", f"%{text}%"]],
             fields=["name", "customer_name"],
-            limit=self._limit,
-            order_by="modified desc",
-        )
+            limit=self._limit,        )
         leads = await self._client.get_list(
             "Lead",
             filters=[["lead_name", "like", f"%{text}%"]],
             fields=["name", "lead_name", "company_name", "status"],
-            limit=self._limit,
-            order_by="modified desc",
-        )
+            limit=self._limit,        )
         candidates: list[dict[str, Any]] = []
         for c in customers:
             candidates.append(
@@ -105,9 +99,7 @@ class Resolver:
             "Item",
             filters=[["item_name", "like", f"%{text}%"]],
             fields=["name", "item_code", "item_name", "stock_uom", "item_group"],
-            limit=self._limit,
-            order_by="modified desc",
-        )
+            limit=self._limit,        )
         res = _classify(rows, was="Artikel", suchtext=text)
         if res.status == "none":
             res.hinweis = (
@@ -122,9 +114,7 @@ class Resolver:
             "Quotation",
             filters=[["customer_name", "like", f"%{text}%"]],
             fields=["name", "party_name", "customer_name", "status", "grand_total", "transaction_date"],
-            limit=self._limit,
-            order_by="modified desc",
-        )
+            limit=self._limit,        )
         return _classify(rows, was="Angebot", suchtext=text)
 
     async def finde_projekt(self, text: str) -> Resolution:
@@ -132,7 +122,5 @@ class Resolver:
             "Project",
             filters=[["project_name", "like", f"%{text}%"]],
             fields=["name", "project_name", "customer", "status"],
-            limit=self._limit,
-            order_by="modified desc",
-        )
+            limit=self._limit,        )
         return _classify(rows, was="Projekt", suchtext=text)

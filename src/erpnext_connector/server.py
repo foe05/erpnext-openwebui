@@ -59,9 +59,7 @@ async def liste(
             ERPNext einen Standardsatz.
         limit: Maximale Anzahl Datensätze (Default 20).
     """
-    return await _client.get_list(
-        doctype, filters=filter, fields=fields, limit=limit, order_by="modified desc"
-    )
+    return await _client.get_list(doctype, filters=filter, fields=fields, limit=limit)
 
 
 @mcp.tool()
@@ -80,7 +78,6 @@ async def suche(doctype: str, text: str, fields: list[str] | None = None) -> lis
         doctype,
         filters=[["name", "like", f"%{text}%"]],
         fields=fields,
-        order_by="modified desc",
     )
 
 

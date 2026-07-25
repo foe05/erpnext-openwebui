@@ -36,6 +36,9 @@ class ErpNextClient:
                 "Accept": "application/json",
             },
             timeout=settings.timeout,
+            # Legitime Frappe-(Cloud-)Redirects (z. B. Kanonisierung) mitgehen;
+            # httpx behält den Auth-Header bei gleichem Host bei.
+            follow_redirects=True,
         )
 
     async def aclose(self) -> None:
