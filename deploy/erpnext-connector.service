@@ -19,10 +19,10 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=claude-dev
-WorkingDirectory=/home/claude-dev/erpnext-openwebui
-EnvironmentFile=/home/claude-dev/erpnext-openwebui/.env
-ExecStart=/home/claude-dev/erpnext-openwebui/.venv/bin/mcpo \
-    --config /home/claude-dev/erpnext-openwebui/deploy/mcpo.config.json \
+WorkingDirectory=/home/claude-dev/projects/erpnext-openwebui
+EnvironmentFile=/home/claude-dev/projects/erpnext-openwebui/.env
+ExecStart=/home/claude-dev/.venv/bin/mcpo \
+    --config /home/claude-dev/projects/erpnext-openwebui/deploy/mcpo.config.json \
     --host 0.0.0.0 --port 8111 \
     --api-key ${MCPO_API_KEY}
 Restart=on-failure

@@ -1,15 +1,12 @@
 {
   "//": "mcpo-Konfiguration: exponiert den stdio-MCP-Server als OpenAPI/HTTP für OpenWebUI.",
-  "//run": "mcpo --config deploy/mcpo.config.json --port 8000  (dann OpenWebUI-Tool-Server auf http://<vm>:8000/erpnext zeigen)",
+  "//run": "mcpo --config deploy/mcpo.config.json --host 0.0.0.0 --port 8111 --api-key <KEY>",
+  "//command": "Absoluter venv-Python-Pfad, damit der Subprozess ohne aktiviertes venv startet (auch unter systemd). Pfad an deine VM anpassen.",
+  "//env": "Keine env-Werte hier — der Connector liest ERPNEXT_URL/KEY/SECRET aus der .env im Arbeitsverzeichnis (WorkingDirectory).",
   "mcpServers": {
     "erpnext": {
-      "command": "python",
-      "args": ["-m", "erpnext_connector"],
-      "env": {
-        "ERPNEXT_URL": "https://deine-instanz.frappe.cloud",
-        "ERPNEXT_API_KEY": "${ERPNEXT_API_KEY}",
-        "ERPNEXT_API_SECRET": "${ERPNEXT_API_SECRET}"
-      }
+      "command": "/home/claude-dev/.venv/bin/python",
+      "args": ["-m", "erpnext_connector"]
     }
   }
 }
