@@ -1,0 +1,32 @@
+# systemd-Unit für mcpo + ERPNext-Connector.
+#
+# Installation (Pfade/User an deine VM anpassen!):
+#   sudo cp deploy/erpnext-connector.service /etc/systemd/system/
+#   sudo nano /etc/systemd/system/erpnext-connector.service   # Pfade prüfen
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now erpnext-connector
+#   systemctl status erpnext-connector          # läuft?
+#   journalctl -u erpnext-connector -f          # Logs live
+#
+# Secrets kommen aus der .env im WorkingDirectory (ERPNEXT_URL/KEY/SECRET,
+# MCPO_API_KEY) — nicht in diese Datei schreiben.
+
+[Unit]
+Description=ERPNext Connector (mcpo -> MCP -> ERPNext REST)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=claude-dev
+WorkingDirectory=/home/claude-dev/erpnext-openwebui
+EnvironmentFile=/home/claude-dev/erpnext-openwebui/.env
+ExecStart=/home/claude-dev/erpnext-openwebui/.venv/bin/mcpo \
+    --config /home/claude-dev/erpnext-openwebui/deploy/mcpo.config.json \
+    --host 0.0.0.0 --port 8111 \
+    --api-key ${MCPO_API_KEY}
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
