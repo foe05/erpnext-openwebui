@@ -13,9 +13,16 @@ Planung/Spezifikation liegen unter `openspec/changes/erpnext-openwebui-connector
 
 ## Status
 
-**Phase 0 (das Rohr)** ist implementiert: REST-Client, Auflösungsschicht und generische Lesewerkzeuge.
+**Phase 0 (das Rohr)** — REST-Client, Auflösungsschicht, generische Lesewerkzeuge. Live verifiziert.
 
-Werkzeuge: `hole`, `liste`, `suche`, `finde_kunde`, `finde_party`, `finde_artikel`, `finde_angebot`, `finde_projekt`.
+**Phase 1 (Vertriebs-Rücken)** — Code fertig, End-to-End-Verifikation an der echten Instanz offen (Feldnamen/Mapper prüfen).
+
+Werkzeuge:
+- Lesen/Auflösen: `hole`, `liste`, `suche`, `finde_kunde`, `finde_party`, `finde_artikel`, `finde_angebot`, `finde_projekt`
+- Vertrieb: `kontakt_anlegen`, `lead_zu_kunde`, `angebot_erstellen`, `angebot_annehmen`, `projekt_anlegen`, `zeit_erfassen`, `rechnung_aus_zeiten`, `zahlung_verbuchen`, `verbuchen`, `stornieren`
+
+Verbuchende Verben (submit/cancel) verlangen `bestaetigen=true` — erster Aufruf liefert eine Vorschau.
+Für korrekte Beträge in Phase 1 die Selling-Config in `.env` setzen (Service-Item, Steuertemplate, Preisliste, Employee).
 
 ## Installation (auf der VM)
 

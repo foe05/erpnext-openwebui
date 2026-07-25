@@ -105,6 +105,21 @@ class ErpNextClient:
         resp = await self._client.put(f"/api/resource/{doctype}/{name}", json=patch)
         return self._unwrap(resp)
 
+    async def submit_doc(self, doctype: str, name: str) -> Any:
+        """Ein Dokument verbuchen (docstatus 0 -> 1) über frappe.client.submit."""
+        doc = await self.get_doc(doctype, name)
+        return await self.call_method(
+            "frappe.client.submit", params={"doc": doc}, http_method="POST"
+        )
+
+    async def cancel_doc(self, doctype: str, name: str) -> Any:
+        """Ein Dokument stornieren (docstatus 1 -> 2) über frappe.client.cancel."""
+        return await self.call_method(
+            "frappe.client.cancel",
+            params={"doctype": doctype, "name": name},
+            http_method="POST",
+        )
+
     # -- Methoden (whitelisted, u. a. make_*-Übergänge) -------------------------
 
     async def call_method(

@@ -27,6 +27,12 @@ class Settings:
     api_secret: str
     default_limit: int = 20
     timeout: float = 30.0
+    # Selling-Config-Vorbedingungen (Phase 1 ⇄ Phase 3). Optional — fehlen sie,
+    # warnen die Verben, statt still falsche Beträge/Belege zu erzeugen.
+    default_employee: str = ""
+    generic_service_item: str = ""
+    default_tax_template: str = ""
+    default_price_list: str = ""
 
     @property
     def auth_header(self) -> str:
@@ -53,4 +59,8 @@ def load_settings() -> Settings:
         api_secret=_require("ERPNEXT_API_SECRET"),
         default_limit=int(os.environ.get("ERPNEXT_DEFAULT_LIMIT", "20")),
         timeout=float(os.environ.get("ERPNEXT_TIMEOUT", "30")),
+        default_employee=os.environ.get("ERPNEXT_DEFAULT_EMPLOYEE", "").strip(),
+        generic_service_item=os.environ.get("ERPNEXT_GENERIC_SERVICE_ITEM", "").strip(),
+        default_tax_template=os.environ.get("ERPNEXT_DEFAULT_TAX_TEMPLATE", "").strip(),
+        default_price_list=os.environ.get("ERPNEXT_DEFAULT_PRICE_LIST", "").strip(),
     )
