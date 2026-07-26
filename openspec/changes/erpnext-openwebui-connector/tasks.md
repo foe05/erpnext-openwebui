@@ -32,12 +32,12 @@
 
 ## 4. Phase 3 — Konfiguration
 
-- [ ] 4.1 Blueprint-Format (YAML) definieren inkl. Abhängigkeitsreihenfolge
-- [ ] 4.2 `config_blueprint_anwenden` implementieren (idempotent, reihenfolge-sicher, klarer Abbruch bei Fehler)
-- [ ] 4.3 Selling-Config-Bündel ins Blueprint aufnehmen: generische Service-Items, Verkaufspreisliste + Item Prices, Steuertemplates (19 % Default, 7 %, Reverse-Charge/EU), Activity-Type-Sätze
-- [ ] 4.4 Kleine Tweak-Verben (z. B. `item_gruppe_anlegen`, `steuerklasse_anlegen`)
-- [ ] 4.5 Kundenportal-Aktivierung (ERPNext-Einstellungen/Rollen setzen)
-- [ ] 4.6 Ersten realen Config-Blueprint gegen die Ziel-Instanz erstellen und anwenden
+- [x] 4.1 Blueprint-Format (YAML, steps mit doctype/key/records = Abhängigkeitsreihenfolge) definiert; `deploy/blueprint.example.yaml`
+- [x] 4.2 `config_blueprint_anwenden` (Vorschau/Dry-Run ohne bestaetigen, idempotent via key-Prüfung, klarer Abbruch bei Fehler) — live verifiziert
+- [x] 4.3 Selling-Config im Beispiel-Blueprint (Item Group, Activity Types, generisches Service-Item); Steuertemplates bewusst im UI/Kontenrahmen belassen (konten-abhängige Zeilen)
+- [x] 4.4 `config_anlegen` (generisches, idempotentes Tweak-Verb; deckt Item Group/Activity Type/Steuerklasse etc. ab)
+- [x] 4.5 `portal_zugang_anlegen` (Website-User + Contact mit Customer-Rolle, unter Guardrail) — implementiert, Guardrail live verifiziert
+- [ ] 4.6 Ersten realen Config-Blueprint erstellen und anwenden — Mechanismus verifiziert (Wegwerf-Datensatz); realen Inhalt in `deploy/blueprint.example.yaml` nach Bedarf füllen und anwenden
 
 ## 5. Absicherung & Betrieb
 

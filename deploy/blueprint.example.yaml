@@ -1,0 +1,38 @@
+# Beispiel-Config-Blueprint für ERPNext (deklarativ, reviewbar, im Git versioniert).
+#
+# Anwenden:
+#   1. Vorschau:  config_blueprint_anwenden(pfad="deploy/blueprint.example.yaml")
+#   2. Anwenden:  config_blueprint_anwenden(pfad="deploy/blueprint.example.yaml", bestaetigen=true)
+#
+# - Reihenfolge der steps = Abhängigkeitsreihenfolge.
+# - `key` ist das Feld (oder eine Liste von Feldern), an dem Idempotenz geprüft
+#   wird: existiert der Datensatz schon, wird er übersprungen.
+# - Steuertemplates (Sales Taxes and Charges Template) sind bewusst NICHT hier,
+#   weil sie viele konten-abhängige Zeilen haben — die besser im ERPNext-UI/über
+#   den Kontenrahmen pflegen und hier nur referenzieren.
+
+steps:
+  - doctype: Item Group
+    key: item_group_name
+    records:
+      - item_group_name: Dienstleistungen
+        is_group: 0
+
+  - doctype: Activity Type
+    key: activity_type
+    records:
+      - activity_type: Vor-Ort-Beratung
+      - activity_type: Remote-Support
+      - activity_type: Entwicklung/Anpassung
+      - activity_type: Projektmanagement
+      - activity_type: Schulung
+
+  # Generisches Service-/Fallback-Item (Hybrid-Item-Strategie)
+  - doctype: Item
+    key: item_code
+    records:
+      - item_code: BER-STD
+        item_name: Beratungsleistung (Standard)
+        item_group: Dienstleistungen
+        is_stock_item: 0
+        stock_uom: Hour

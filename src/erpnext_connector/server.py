@@ -15,6 +15,7 @@ from mcp.server.fastmcp import FastMCP
 
 from .client import ErpNextClient
 from .config import load_settings
+from .config_admin import ConfigAdmin
 from .crm import CrmMemory
 from .resolve import Resolver
 from .sales import SalesCycle
@@ -26,6 +27,7 @@ _client = ErpNextClient(_settings)
 _resolver = Resolver(_client)
 _sales = SalesCycle(_client, _resolver, _settings)
 _crm = CrmMemory(_client, _settings)
+_config = ConfigAdmin(_client, _settings)
 
 
 # -- Generische Lesewerkzeuge --------------------------------------------------
@@ -359,3 +361,61 @@ async def erinnerung_anlegen(
             der konfigurierte Default-User.
     """
     return await _crm.erinnerung_anlegen(bezug_typ, bezug_id, text, faellig_am, zustaendig)
+
+
+# -- Konfiguration (Phase 3) ---------------------------------------------------
+
+
+@mcp.tool()
+async def config_blueprint_anwenden(
+    pfad: str | None = None,
+    blueprint: dict[str, Any] | None = None,
+    bestaetigen: bool = False,
+) -> dict[str, Any]:
+    """Ein deklaratives Config-Blueprint (YAML-Datei oder Struktur) anwenden —
+    idempotent und reihenfolge-sicher.
+
+    Ohne bestaetigen=true wird nur eine Vorschau (was würde angelegt/übersprungen)
+    zurückgegeben. Bei einem Fehler bricht die Anwendung klar ab, ohne mit
+    abhängigen Folgeschritten fortzufahren.
+
+    Args:
+        pfad: Pfad zur YAML-Blueprint-Datei (z. B. "deploy/blueprint.example.yaml").
+        blueprint: alternativ die Blueprint-Struktur direkt.
+        bestaetigen: erst mit true wird tatsächlich geschrieben.
+    """
+    return await _config.blueprint_anwenden(blueprint, pfad, bestaetigen)
+
+
+@mcp.tool()
+async def config_anlegen(
+    doctype: str, daten: dict[str, Any], schluessel_feld: str | None = None
+) -> dict[str, Any]:
+    """Ein einzelnes Config-Objekt idempotent anlegen (kleine Tweaks).
+
+    Beispiele: config_anlegen("Item Group", {"item_group_name": "Wartung"}, "item_group_name")
+    oder config_anlegen("Activity Type", {"activity_type": "Workshop"}, "activity_type").
+
+    Args:
+        doctype: Config-DocType.
+        daten: Felder des Objekts.
+        schluessel_feld: Feld zur Vorhandensein-Prüfung (überspringt, wenn schon da).
+    """
+    return await _config.config_anlegen(doctype, daten, schluessel_feld)
+
+
+@mcp.tool()
+async def portal_zugang_anlegen(
+    kunde_id: str, email: str, vorname: str | None = None, bestaetigen: bool = False
+) -> dict[str, Any]:
+    """Einem Kunden Zugang zum ERPNext-Kundenportal geben (Website-User + Contact).
+
+    Legt einen echten Login an — daher unter dem Bestätigungs-Guardrail.
+
+    Args:
+        kunde_id: echte Customer-ID (via finde_kunde auflösen).
+        email: E-Mail des Portal-Nutzers (wird der Login).
+        vorname: optionaler Vorname.
+        bestaetigen: erst mit true wird der Login angelegt.
+    """
+    return await _config.portal_zugang_anlegen(kunde_id, email, vorname, bestaetigen)
