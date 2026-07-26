@@ -52,9 +52,11 @@ class ErpNextClient:
 
     # -- interne Fehlerbehandlung ------------------------------------------------
 
-    def _unwrap(self, response: httpx.Response) -> Any:
+    def _unwrap(self, response: httpx.Response, key: str = "data") -> Any:
+        # Ressourcen (/api/resource) liefern unter "data", whitelisted Methoden
+        # (/api/method, u. a. make_*) unter "message".
         if response.is_success:
-            return response.json().get("data")
+            return response.json().get(key)
         # Frappe verpackt Fehler oft als _server_messages / exception im Body.
         detail: Any
         try:
@@ -145,4 +147,4 @@ class ErpNextClient:
             resp = await self._client.get(path, params=encoded)
         else:
             resp = await self._client.post(path, data=encoded)
-        return self._unwrap(resp)
+        return self._unwrap(resp, key="message")

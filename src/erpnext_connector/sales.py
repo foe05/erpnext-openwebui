@@ -12,6 +12,7 @@ leicht abweichen — an der echten Instanz verifizieren (Task 5.1)."""
 
 from __future__ import annotations
 
+from datetime import date
 from typing import Any
 
 from .client import ErpNextClient, ErpNextError
@@ -163,7 +164,7 @@ class SalesCycle:
         }
 
     async def angebot_annehmen(
-        self, angebot_id: str, bestaetigen: bool = False
+        self, angebot_id: str, bestaetigen: bool = False, lieferdatum: str | None = None
     ) -> dict[str, Any]:
         q = await self._client.get_doc("Quotation", angebot_id)
         schritte: list[str] = []
@@ -189,6 +190,16 @@ class SalesCycle:
             "erpnext.selling.doctype.quotation.quotation.make_sales_order",
             params={"source_name": angebot_id},
         )
+        if not so_doc:
+            return {
+                "status": "fehler",
+                "hinweis": f"make_sales_order lieferte kein Dokument für {angebot_id}.",
+            }
+        # ERPNext verlangt ein Lieferdatum (Kopf + Positionen); Mapper gibt keins mit.
+        liefer = lieferdatum or date.today().isoformat()
+        so_doc.setdefault("delivery_date", liefer)
+        for pos in so_doc.get("items", []):
+            pos.setdefault("delivery_date", liefer)
         created = await self._client.create_doc("Sales Order", so_doc)
         schritte.append("Auftrag erzeugt")
         return {"id": created["name"], "typ": "Sales Order", "schritte": schritte}

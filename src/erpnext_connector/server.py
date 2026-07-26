@@ -197,15 +197,18 @@ async def angebot_erstellen(
 
 
 @mcp.tool()
-async def angebot_annehmen(angebot_id: str, bestaetigen: bool = False) -> dict[str, Any]:
+async def angebot_annehmen(
+    angebot_id: str, bestaetigen: bool = False, lieferdatum: str | None = None
+) -> dict[str, Any]:
     """Ein Angebot annehmen: verbucht es (submit) und erzeugt einen Sales Order.
 
     Args:
         angebot_id: echte Quotation-ID (via finde_angebot auflösen).
         bestaetigen: submit verbucht Daten — erst mit bestaetigen=true ausführen.
+        lieferdatum: Lieferdatum des Auftrags (YYYY-MM-DD); ohne Angabe heute.
     Bei einem Angebot an einen Lead: zuerst lead_zu_kunde nötig.
     """
-    return await _sales.angebot_annehmen(angebot_id, bestaetigen)
+    return await _sales.angebot_annehmen(angebot_id, bestaetigen, lieferdatum)
 
 
 @mcp.tool()
