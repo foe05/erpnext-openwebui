@@ -20,7 +20,7 @@
 - [x] 2.7 `rechnung_aus_zeiten`: alle offenen abrechenbaren TS eines Projekts sammeln, submitten und zu EINER Sales Invoice aggregieren (`timesheets[]` selbst befüllen, Zeile je Tätigkeitsart)
 - [x] 2.8 Submit/Cancel-Bestätigungs-Guardrail implementieren (`guardrail.py`, `bestaetigen`-Parameter; auch `verbuchen`/`stornieren`)
 - [x] 2.9 `zahlung_verbuchen` (Payment Entry zu Invoice, Submit gemäß Guardrail)
-- [ ] 2.10 Gesamten Flow Kontakt→Angebot→Annahme→Projekt→Zeit→Rechnung end-to-end testen — braucht Live-Instanz (Feldnamen/Mapper verifizieren, Task 5.1)
+- [x] 2.10 Gesamten Flow Kontakt→Angebot→Annahme→Projekt→Zeit→Rechnung end-to-end live getestet (Kontakt, Angebot ANG26-00002 → Auftrag SAL-ORD-2026-00002 → Projekt → Zeit 160€ → Rechnung RE26-00004). Offen nur: ERPNext-Steuerkonfig (Item Tax Template), kein Connector-Thema
 
 ## 3. Phase 2 — CRM & Erinnerungen
 
