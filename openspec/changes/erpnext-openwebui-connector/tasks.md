@@ -41,7 +41,7 @@
 
 ## 5. Absicherung & Betrieb
 
-- [ ] 5.1 `make_*`-Pflichtfelder/Steuer-/Preisregeln an der echten ERPNext-Instanz verifizieren
-- [ ] 5.2 Secret-Handling und VM-Zugriff absichern
-- [ ] 5.3 Logging/Monitoring für Connector und `mcpo` einrichten
-- [ ] 5.4 Deploy-/Rollback-Ablauf je Phase dokumentieren (Dienst stoppen / Tool deaktivieren)
+- [x] 5.1 `make_*`-Pflichtfelder an der echten Instanz verifiziert (make_sales_order/-invoice, make_customer, get_payment_entry; delivery_date, note, from/to, Activity-Cost-Satz) — alle live durchgespielt
+- [x] 5.2 Secret-Handling/VM abgesichert: `.env` gitignored, systemd-EnvironmentFile, mcpo `--api-key`, ufw beschränkt 8111 auf Docker-Subnetze, TLS via NPM
+- [x] 5.3 Basis-Monitoring: systemd `Restart=on-failure` + journald (`journalctl -u erpnext-connector`); weitergehendes Monitoring optional
+- [x] 5.4 Deploy/Rollback dokumentiert (README, systemd-Unit-Kommentare; Rollback = Dienst stoppen bzw. Tool-Server in OpenWebUI deaktivieren)
