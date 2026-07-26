@@ -15,6 +15,7 @@ from mcp.server.fastmcp import FastMCP
 
 from .client import ErpNextClient
 from .config import load_settings
+from .crm import CrmMemory
 from .resolve import Resolver
 from .sales import SalesCycle
 
@@ -24,6 +25,7 @@ _settings = load_settings()
 _client = ErpNextClient(_settings)
 _resolver = Resolver(_client)
 _sales = SalesCycle(_client, _resolver, _settings)
+_crm = CrmMemory(_client, _settings)
 
 
 # -- Generische Lesewerkzeuge --------------------------------------------------
@@ -304,3 +306,56 @@ async def stornieren(doctype: str, id: str, bestaetigen: bool = False) -> dict[s
         bestaetigen: storniert Daten — erst mit bestaetigen=true ausführen.
     """
     return await _sales.stornieren(doctype, id, bestaetigen)
+
+
+# -- CRM & Gedächtnis (Phase 2) ------------------------------------------------
+
+
+@mcp.tool()
+async def kundenhistorie(kunde_id: str) -> dict[str, Any]:
+    """Die Historie eines Kunden zusammenführen: Angebote, Aufträge, Rechnungen,
+    Projekte, Kommunikation und offene Erinnerungen.
+
+    Args:
+        kunde_id: echte Customer-ID (via finde_kunde auflösen).
+    """
+    return await _crm.kundenhistorie(kunde_id)
+
+
+@mcp.tool()
+async def aktivitaet_loggen(
+    bezug_typ: str, bezug_id: str, text: str, betreff: str | None = None
+) -> dict[str, Any]:
+    """Eine Kontaktnotiz/Aktivität festhalten — erscheint in der Timeline der Party.
+
+    Args:
+        bezug_typ: DocType, z. B. "Customer" oder "Lead".
+        bezug_id: echte ID der Party (via finde_kunde/finde_party auflösen).
+        text: Inhalt der Notiz (z. B. "Telefonat: Interesse an Wartungsvertrag").
+        betreff: optionaler Betreff.
+    """
+    return await _crm.aktivitaet_loggen(bezug_typ, bezug_id, text, betreff)
+
+
+@mcp.tool()
+async def erinnerung_anlegen(
+    bezug_typ: str,
+    bezug_id: str,
+    text: str,
+    faellig_am: str,
+    zustaendig: str | None = None,
+) -> dict[str, Any]:
+    """Eine Erinnerung an einen künftigen Kundenkontakt als ToDo mit Fälligkeit anlegen.
+
+    Push läuft über ERPNexts eigenes Notification/Assignment-System — der Connector
+    erzeugt selbst keine Chat-Nachrichten.
+
+    Args:
+        bezug_typ: DocType, z. B. "Customer" oder "Lead".
+        bezug_id: echte ID der Party.
+        text: worum es geht (z. B. "Nachfassen wegen Angebot").
+        faellig_am: Fälligkeitsdatum (YYYY-MM-DD).
+        zustaendig: User/E-Mail, dem die Erinnerung zugewiesen wird; ohne Angabe
+            der konfigurierte Default-User.
+    """
+    return await _crm.erinnerung_anlegen(bezug_typ, bezug_id, text, faellig_am, zustaendig)

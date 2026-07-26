@@ -33,6 +33,7 @@ class Settings:
     generic_service_item: str = ""
     default_tax_template: str = ""
     default_price_list: str = ""
+    default_user: str = ""  # allocated_to für Erinnerungen (ToDo), wenn nicht angegeben
 
     @property
     def auth_header(self) -> str:
@@ -63,4 +64,5 @@ def load_settings() -> Settings:
         generic_service_item=os.environ.get("ERPNEXT_GENERIC_SERVICE_ITEM", "").strip(),
         default_tax_template=os.environ.get("ERPNEXT_DEFAULT_TAX_TEMPLATE", "").strip(),
         default_price_list=os.environ.get("ERPNEXT_DEFAULT_PRICE_LIST", "").strip(),
+        default_user=os.environ.get("ERPNEXT_DEFAULT_USER", "").strip(),
     )

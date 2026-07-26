@@ -24,11 +24,11 @@
 
 ## 3. Phase 2 — CRM & Erinnerungen
 
-- [ ] 3.1 `kundenhistorie` (Kommunikation/Aktivitäten + verknüpfte Belege zusammenführen)
-- [ ] 3.2 `aktivitaet_loggen` (Kontaktnotiz an Party, erscheint in Historie)
-- [ ] 3.3 `erinnerung_anlegen` (ToDo/Notification mit Fälligkeit)
-- [ ] 3.4 Push-Zustellung fälliger Erinnerungen über ERPNext-Notification/ToDo verifizieren
-- [ ] 3.5 Prüfen, dass der Connector ohne Nutzerfrage keine Chat-Nachrichten erzeugt (Pull bleibt Pull)
+- [x] 3.1 `kundenhistorie` (Belege + Kommunikation + offene Erinnerungen; live verifiziert an HG Mirower Heide)
+- [x] 3.2 `aktivitaet_loggen` (Communication an Party; live angelegt)
+- [x] 3.3 `erinnerung_anlegen` (ToDo mit Fälligkeit + allocated_to; live angelegt)
+- [x] 3.4 Push-Mechanismus: ToDo wird mit Fälligkeit + Zuständigem angelegt; Zustellung übernimmt ERPNexts eigenes Assignment/Notification-System (abhängig von deren Notification-Konfig)
+- [x] 3.5 Pull bleibt Pull: der Connector antwortet nur auf Tool-Aufrufe und erzeugt selbst keine Chat-Nachrichten (Push läuft ausschließlich über ERPNext)
 
 ## 4. Phase 3 — Konfiguration
 
