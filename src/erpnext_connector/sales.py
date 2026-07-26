@@ -12,7 +12,7 @@ leicht abweichen — an der echten Instanz verifizieren (Task 5.1)."""
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from .client import ErpNextClient, ErpNextError
@@ -232,6 +232,34 @@ class SalesCycle:
 
     # -- Zeit ------------------------------------------------------------------
 
+    async def _activity_rate(self, activity_type: str, employee: str) -> float | None:
+        """Abrechnungssatz aus Activity Cost holen — bevorzugt mitarbeiterspezifisch,
+        sonst global. ERPNexts Auto-Fetch beim REST-Insert findet die globale Rate
+        (leerer employee) nicht, daher setzen wir sie explizit."""
+        rows = await self._client.get_list(
+            "Activity Cost",
+            filters=[["activity_type", "=", activity_type]],
+            fields=["employee", "billing_rate"],
+            limit=20,
+        )
+        if not rows:
+            return None
+        if employee:
+            for r in rows:
+                if r.get("employee") == employee:
+                    return r.get("billing_rate")
+        for r in rows:
+            if not r.get("employee"):
+                return r.get("billing_rate")
+        return rows[0].get("billing_rate")
+
+    @staticmethod
+    def _setze_zeitfenster(zeile: dict[str, Any], start: datetime, stunden: float) -> None:
+        """from_time/to_time auf der Zeile setzen (Pflicht fürs Timesheet-Submit)."""
+        ende = start + timedelta(hours=float(stunden))
+        zeile["from_time"] = start.strftime("%Y-%m-%d %H:%M:%S")
+        zeile["to_time"] = ende.strftime("%Y-%m-%d %H:%M:%S")
+
     async def zeit_erfassen(
         self,
         projekt_id: str,
@@ -259,6 +287,10 @@ class SalesCycle:
             "project": projekt_id,
             "description": beschreibung,
         }
+        rate = await self._activity_rate(activity_type, emp)
+        if rate:
+            zeile["billing_rate"] = rate
+        tag = datum or date.today().isoformat()
         # offenes Draft-Timesheet für (Projekt, Mitarbeiter) suchen
         filters: list[list[Any]] = [["parent_project", "=", projekt_id], ["docstatus", "=", 0]]
         if emp:
@@ -269,12 +301,30 @@ class SalesCycle:
         if offene:
             ts_name = offene[0]["name"]
             ts = await self._client.get_doc("Timesheet", ts_name)
-            logs = ts.get("time_logs", []) + [zeile]
+            existing = ts.get("time_logs", [])
+            # neue Buchung nach dem Ende der letzten Zeile ansetzen (keine Überlappung)
+            letzte_ende = next(
+                (r["to_time"] for r in reversed(existing) if r.get("to_time")), None
+            )
+            start = (
+                datetime.fromisoformat(letzte_ende)
+                if letzte_ende
+                else datetime.fromisoformat(f"{tag} 09:00:00")
+            )
+            self._setze_zeitfenster(zeile, start, dauer_stunden)
             ts_result = await self._client.update_doc(
-                "Timesheet", ts_name, {"time_logs": logs}
+                "Timesheet", ts_name, {"time_logs": existing + [zeile]}
             )
         else:
-            doc: dict[str, Any] = {"parent_project": projekt_id, "time_logs": [zeile]}
+            self._setze_zeitfenster(
+                zeile, datetime.fromisoformat(f"{tag} 09:00:00"), dauer_stunden
+            )
+            doc: dict[str, Any] = {
+                "parent_project": projekt_id,
+                "time_logs": [zeile],
+                # note ist in dieser Instanz Pflichtfeld; mit der Beschreibung füllen.
+                "note": beschreibung,
+            }
             if emp:
                 doc["employee"] = emp
             ts_result = await self._client.create_doc("Timesheet", doc)
